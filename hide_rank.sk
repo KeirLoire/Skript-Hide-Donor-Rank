@@ -1,0 +1,66 @@
+options:
+    diamond_ranks: "Baronet" or "Count" or "Margrave" or "Viceroy" or "Prince" or "King" or "Emperor"
+
+command /hiderank:
+    trigger:
+        set {_groups::*} to groups of player
+        if {hiderank::%player%} is set:
+            console command "/pex user %player% group add %{hiderank::%player%}%"
+            console command "/pex user %player% group remove Hidden%{hiderank::%player%}%"
+            clear {hiderank::%player%}
+            message "&eDonor rank is now visible."
+        else:
+            loop {_groups::*}:
+                if loop-value is {@diamond_ranks}:
+                    set {hiderank::%player%} to "%loop-value%"
+                    console command "/pex user %player% group add Hidden%loop-value%"
+                    console command "/pex user %player% group remove %loop-value%"
+                    message "&eDonor rank is now hidden."
+                    set {_donor} to true
+                    stop loop
+            if {_donor} is false:
+                message "&4You do not have donator rank."
+            
+command /showrank [<text>]:
+    aliases: /showhiddenrank
+    trigger:
+        set {_player} to arg-1 parsed as player
+        if {hiderank::%{_player}%} is set:
+            message "&eRank of %{_player}% is %{hiderank::%{_player}%}%."
+        else:
+            message "&eNo hidden rank found."
+
+command /showdonors:
+    aliases: /showdonor
+    trigger:
+        loop players:
+            set {_groups::*} to groups of loop-player
+            loop {_groups::*}:
+                if loop-value-2 is "Baronet" or "HiddenBaronet":
+                    add loop-player to {_baronet::*}
+                else if loop-value-2 is "Count" or "HiddenCount":
+                    add loop-player to {_count::*}
+                else if loop-value-2 is "Margrave" or "HiddenMargrave":
+                    add loop-player to {_margrave::*}
+                else if loop-value-2 is "Viceroy" or "HiddenViceroy":
+                    add loop-player to {_viceroy::*}
+                else if loop-value-2 is "Prince" or "HiddenPrince":
+                    add loop-player to {_prince::*}
+                else if loop-value-2 is "King" or "HiddenKing":
+                    add loop-player to {_king::*}
+                else if loop-value-2 is "Emperor" or "HiddenEmperor":
+                    add loop-player to {_emperor::*}
+        if {_emperor::*} is set:
+            message "&b[Emperor] &e%{_emperor::*}%"
+        if {_king::*} is set:
+            message "&b[King] &e%{_king::*}%"
+        if {_prince::*} is set:
+            message "&b[Prince] &e%{_prince::*}%"
+        if {_viceroy::*} is set:
+            message "&b[Viceroy] &e%{_viceroy::*}%"
+        if {_margrave::*} is set:
+            message "&b[Margrave] &e%{_margrave::*}%"
+        if {_count::*} is set:
+            message "&b[Count] &e%{_count::*}%"
+        if {_baronet::*} is set:
+            message "&b[Baronet] &e%{_baronet::*}%"
